@@ -1,0 +1,12 @@
+{
+  "frame": true,
+  "audio": "preserve",
+  "sound_effects": {"enabled": true, "volume": 0.35},
+  "crf": 16,
+  "click_highlights": true,
+  "source_cursor_visible": true,
+  "events": [
+    {"time": 2.0, "x": 0.45, "y": 0.55, "zoom": 1.45, "sound": "click"},
+    {"time": 6.0, "x": 0.88, "y": 0.12, "zoom": 1.6, "sound": "open"}
+  ]
+}

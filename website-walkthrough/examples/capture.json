@@ -1,0 +1,11 @@
+{
+  "url": "https://example.com",
+  "viewport": {"width": 1440, "height": 900},
+  "initial_hold": 0.8,
+  "end_hold": 1.5,
+  "steps": [
+    {"action": "wait", "seconds": 1},
+    {"action": "scroll", "dy": 300, "pause": 0.8},
+    {"action": "wait", "seconds": 1}
+  ]
+}
