@@ -1,0 +1,175 @@
+{
+  "name": "AI Pioneers digital palette",
+  "colors": {
+    "midnight_navy": "#020624",
+    "deep_navy": "#0F1543",
+    "dark_purple": "#2F2447",
+    "mid_purple": "#4A3B68",
+    "muted_blue": "#58709C",
+    "pale_blue": "#B7CDDD",
+    "pale_lavender": "#D4DAFA",
+    "off_white": "#F6F9FC"
+  },
+  "reversed_logo_white": "#FFFFFF",
+  "source": "Guideline page 11; conflicting navy RGB and muted-blue hex resolved against original vector fills",
+  "roles_are_descriptive": true,
+  "swatches": [
+    {
+      "id": "midnight_navy",
+      "name": "Midnight Navy",
+      "hex": "#020624",
+      "rgb": [
+        2,
+        6,
+        36
+      ],
+      "cmyk_source_label": [
+        89,
+        82,
+        54,
+        72
+      ]
+    },
+    {
+      "id": "deep_navy",
+      "name": "Deep Navy",
+      "hex": "#0F1543",
+      "rgb": [
+        15,
+        21,
+        67
+      ],
+      "cmyk_source_label": [
+        100,
+        96,
+        37,
+        46
+      ]
+    },
+    {
+      "id": "dark_purple",
+      "name": "Dark Purple",
+      "hex": "#2F2447",
+      "rgb": [
+        47,
+        36,
+        71
+      ],
+      "cmyk_source_label": [
+        86,
+        91,
+        41,
+        41
+      ]
+    },
+    {
+      "id": "mid_purple",
+      "name": "Mid Purple",
+      "hex": "#4A3B68",
+      "rgb": [
+        74,
+        59,
+        104
+      ],
+      "cmyk_source_label": [
+        80,
+        86,
+        30,
+        17
+      ]
+    },
+    {
+      "id": "muted_blue",
+      "name": "Muted Blue",
+      "hex": "#58709C",
+      "rgb": [
+        88,
+        112,
+        156
+      ],
+      "cmyk_source_label": [
+        75,
+        54,
+        17,
+        1
+      ]
+    },
+    {
+      "id": "pale_blue",
+      "name": "Pale Blue",
+      "hex": "#B7CDDD",
+      "rgb": [
+        183,
+        205,
+        221
+      ],
+      "cmyk_source_label": [
+        29,
+        10,
+        7,
+        0
+      ]
+    },
+    {
+      "id": "pale_lavender",
+      "name": "Pale Lavender",
+      "hex": "#D4DAFA",
+      "rgb": [
+        212,
+        218,
+        250
+      ],
+      "cmyk_source_label": [
+        15,
+        11,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "off_white",
+      "name": "Off White",
+      "hex": "#F6F9FC",
+      "rgb": [
+        246,
+        249,
+        252
+      ],
+      "cmyk_source_label": [
+        3,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "source_label_corrections": [
+    {
+      "color": "midnight_navy",
+      "printed_rgb": [
+        36,
+        6,
+        2
+      ],
+      "use_rgb": [
+        2,
+        6,
+        36
+      ],
+      "use_hex": "#020624",
+      "evidence": "Original PDF vector fill and printed hex agree."
+    },
+    {
+      "color": "muted_blue",
+      "printed_hex": "#4A3B68",
+      "use_hex": "#58709C",
+      "use_rgb": [
+        88,
+        112,
+        156
+      ],
+      "evidence": "Original PDF vector fill and printed RGB agree."
+    }
+  ],
+  "cmyk_note": "Original guide labels, not computed from RGB and not a profile-managed print specification."
+}

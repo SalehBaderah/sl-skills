@@ -1,0 +1,12 @@
+/* AI Pioneers digital colors; see palette.json for source-label corrections. */
+:root {
+  --aip-midnight-navy: #020624;
+  --aip-deep-navy: #0F1543;
+  --aip-dark-purple: #2F2447;
+  --aip-mid-purple: #4A3B68;
+  --aip-muted-blue: #58709C;
+  --aip-pale-blue: #B7CDDD;
+  --aip-pale-lavender: #D4DAFA;
+  --aip-off-white: #F6F9FC;
+  --aip-logo-white: #FFFFFF;
+}

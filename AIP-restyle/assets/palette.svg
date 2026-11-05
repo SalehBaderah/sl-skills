@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+<rect width="1200" height="700" fill="#F6F9FC"/>
+<g font-family="DejaVu Sans, sans-serif">
+<text x="28" y="48" font-size="32" fill="#020624">AI Pioneers · Complete digital palette</text>
+<g id="midnight_navy"><rect x="28" y="88" width="270" height="240" fill="#020624" stroke="#B7CDDD"/>
+<text x="44" y="231" font-size="17" fill="#FFFFFF">Midnight Navy</text>
+<text x="44" y="256" font-size="17" fill="#FFFFFF">#020624</text>
+<text x="44" y="281" font-size="14" fill="#FFFFFF">RGB 2, 6, 36</text>
+<text x="44" y="306" font-size="14" fill="#FFFFFF">Guide CMYK 89, 82, 54, 72</text>
+</g>
+<g id="deep_navy"><rect x="322" y="88" width="270" height="240" fill="#0F1543" stroke="#B7CDDD"/>
+<text x="338" y="231" font-size="17" fill="#FFFFFF">Deep Navy</text>
+<text x="338" y="256" font-size="17" fill="#FFFFFF">#0F1543</text>
+<text x="338" y="281" font-size="14" fill="#FFFFFF">RGB 15, 21, 67</text>
+<text x="338" y="306" font-size="14" fill="#FFFFFF">Guide CMYK 100, 96, 37, 46</text>
+</g>
+<g id="dark_purple"><rect x="616" y="88" width="270" height="240" fill="#2F2447" stroke="#B7CDDD"/>
+<text x="632" y="231" font-size="17" fill="#FFFFFF">Dark Purple</text>
+<text x="632" y="256" font-size="17" fill="#FFFFFF">#2F2447</text>
+<text x="632" y="281" font-size="14" fill="#FFFFFF">RGB 47, 36, 71</text>
+<text x="632" y="306" font-size="14" fill="#FFFFFF">Guide CMYK 86, 91, 41, 41</text>
+</g>
+<g id="mid_purple"><rect x="910" y="88" width="270" height="240" fill="#4A3B68" stroke="#B7CDDD"/>
+<text x="926" y="231" font-size="17" fill="#FFFFFF">Mid Purple</text>
+<text x="926" y="256" font-size="17" fill="#FFFFFF">#4A3B68</text>
+<text x="926" y="281" font-size="14" fill="#FFFFFF">RGB 74, 59, 104</text>
+<text x="926" y="306" font-size="14" fill="#FFFFFF">Guide CMYK 80, 86, 30, 17</text>
+</g>
+<g id="muted_blue"><rect x="28" y="360" width="270" height="240" fill="#58709C" stroke="#B7CDDD"/>
+<text x="44" y="503" font-size="17" fill="#FFFFFF">Muted Blue</text>
+<text x="44" y="528" font-size="17" fill="#FFFFFF">#58709C</text>
+<text x="44" y="553" font-size="14" fill="#FFFFFF">RGB 88, 112, 156</text>
+<text x="44" y="578" font-size="14" fill="#FFFFFF">Guide CMYK 75, 54, 17, 1</text>
+</g>
+<g id="pale_blue"><rect x="322" y="360" width="270" height="240" fill="#B7CDDD" stroke="#B7CDDD"/>
+<text x="338" y="503" font-size="17" fill="#020624">Pale Blue</text>
+<text x="338" y="528" font-size="17" fill="#020624">#B7CDDD</text>
+<text x="338" y="553" font-size="14" fill="#020624">RGB 183, 205, 221</text>
+<text x="338" y="578" font-size="14" fill="#020624">Guide CMYK 29, 10, 7, 0</text>
+</g>
+<g id="pale_lavender"><rect x="616" y="360" width="270" height="240" fill="#D4DAFA" stroke="#B7CDDD"/>
+<text x="632" y="503" font-size="17" fill="#020624">Pale Lavender</text>
+<text x="632" y="528" font-size="17" fill="#020624">#D4DAFA</text>
+<text x="632" y="553" font-size="14" fill="#020624">RGB 212, 218, 250</text>
+<text x="632" y="578" font-size="14" fill="#020624">Guide CMYK 15, 11, 0, 0</text>
+</g>
+<g id="off_white"><rect x="910" y="360" width="270" height="240" fill="#F6F9FC" stroke="#B7CDDD"/>
+<text x="926" y="503" font-size="17" fill="#020624">Off White</text>
+<text x="926" y="528" font-size="17" fill="#020624">#F6F9FC</text>
+<text x="926" y="553" font-size="14" fill="#020624">RGB 246, 249, 252</text>
+<text x="926" y="578" font-size="14" fill="#020624">Guide CMYK 3, 0, 0, 0</text>
+</g>
+<text x="28" y="668" font-size="14" fill="#020624">HEX/RGB are resolved digital values. CMYK labels are from the guide, not a new profile conversion.</text>
+</g>
+</svg>
