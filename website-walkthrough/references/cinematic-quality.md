@@ -22,22 +22,29 @@ For an uploaded source, inspect equivalent sections. Improve composition and pac
 - Respect the original palette and contrast. Avoid crushing dark UI, excessive glow, sharpening halos, fake reflections over text, or decorative motion that competes with the product.
 - Keep the UI square to the viewer while it must be read or operated. If an advanced compositor is available, reserve gentle perspective for brief establishing/ending shots. The bundled renderer has no 3D or custom-background controls; do not promise those from its JSON plan.
 - Prioritize the target **and the resulting content**. Navigation clicks do not need a camera move. Use focus on a project image, feature panel, menu result, or changed state when that advances the story.
+- Compose a complete subject: its heading, the full featured card or panel, and enough context to understand it. Check every edge for a clipped neighboring heading, partial card, stray tooltip, or unrelated control. Reposition the page or pull back when needed; do not cover a composition problem with extra decoration.
 
 ## Choreograph a short story
 
-Choose 3–5 feature beats. A useful 45–60 second structure is:
+Choose one main story and only enough supporting beats to establish it. For a short showcase, start around 25–35 seconds. A practical 30-second structure is:
 
 | Beat | Starting point |
 | --- | --- |
-| Establish the product | 3–5 seconds; stable, readable overview |
-| Show the main value | 10–15 seconds; meaningful action and visible result |
-| Demonstrate supporting features | 15–25 seconds across 2–3 beats |
-| Show a distinctive interaction | 5–8 seconds, if relevant |
-| Finish | 3–5 seconds on a complete, settled view |
+| Establish the product | 2–3 seconds; identity and core promise |
+| Explore one featured project or workflow | 8–10 seconds; enter it, show a meaningful action/detail, and hold the visible outcome |
+| Demonstrate supporting features | 8–10 seconds across 1–2 focused beats |
+| Show a distinctive interaction | 3–4 seconds, if it adds value |
+| Finish | 2–3 seconds; actual identity and a clear contact invitation or next step |
 
-Adapt the structure to the actual product and requested length; do not pad sparse pages. For uploads, preserve duration unless editing it is within the user's request.
+Adapt the structure to the content and the user's pacing feedback. Allow 45–60 seconds for a detailed tour, narration, or a requested explanation. Avoid padding sparse pages or holding every section for the same duration. For uploads, preserve duration unless editing it is within the user's request.
 
-Move the pointer purposefully, settle, interact, then hold the result. Allow roughly 0.5–1 second for pointer travel, 0.8–1.5 seconds for camera transitions, 1.2–2.5 seconds for a short eased scroll, and 3–5 seconds to read important content. Real loading and animation completion determine the actual timing. Avoid pointer detours, rapid jumps through anchor links, and constant zoom-in/zoom-out cycles.
+For a portfolio, inspect a project's detail page before recording and choose a useful result, illustration, or demonstration to show. For an app, select a short workflow with a clear outcome. Keep the story inside the authorized route; an external demo or consequential action may need separate authorization. Never invent results or imply a control works when its outcome was not observed. With existing footage, choose the best available material and state any coverage limit.
+
+Plan the closing composition in advance. Prefer the site's own name/identity and visible contact section, booking link, or next-step control. If those elements are in separate areas, use a short identity shot followed by the real CTA. Hold the final settled view for 2–3 seconds. Do not end halfway through a scroll or click, open a mail client, send a message, or add a branded end card without authorization.
+
+Move the pointer purposefully, settle, interact, then hold the result. Start around 0.4–0.8 seconds for pointer travel, 0.6–1.2 seconds for camera transitions, and 0.8–1.5 seconds for a short eased scroll. Give simple labels roughly 1–2 seconds and the most important results 2–3 seconds; allow longer when actual reading or explanation needs it. Real loading and animation completion determine when the result can be shown. Capture longer holds for editing headroom, then shorten idle time in the final cut. Avoid pointer detours, long pauses between minor actions, uniform holds, and constant zoom-in/zoom-out cycles. Preserve speech and meaningful loading behavior when retiming.
+
+Keep the camera wide and still during navigation, anchor scrolling, and layout changes. After the destination has visibly settled, ease into its important content. Never combine an unsettled page move with a competing camera zoom. A lead-in zoom is appropriate only for an interaction whose surrounding UI stays stable. Check this distinction in the actual encoded transition, not just the keyframe list.
 
 Build camera keys separately from click events. Use 1.10–1.35× focus moves initially; check text at the maximum crop before increasing magnification. Use equal-position keys for holds and a wider establishing composition before large content changes. If two moves overlap, combine them into one deliberate focus instead of averaging unrelated targets.
 
@@ -53,11 +60,15 @@ Review the encoded file at the size the audience will use. Watch the transitions
 
 - Can the viewer read the key heading, labels, and result without pausing or enlarging the player?
 - Is the product prominent, with consistent margins and no important controls cut off?
+- Are the featured heading/card/panel complete, with no distracting fragments of the next section at the edges?
 - Are scrolls and pans smooth, and does every important view have time to settle?
+- Does navigation finish before the camera focuses, and are idle holds short enough for the selected pace?
 - Does each camera move serve the content rather than merely follow the cursor?
+- Is there one memorable project detail or real outcome, with more attention than minor supporting sections?
 - Are there no duplicate pointers, repair artifacts, clipping, stray synchronization slates, or unintended blank frames?
 - Are sounds aligned and quiet, speech intelligible, and silence requests respected?
-- Does the ending feel complete, and does the file fully decode with the expected rate, duration, and audio?
+- Does the final settled shot show a clear identity/contact invitation or legitimate next step, without activating a consequential action?
+- Does the file fully decode with the expected rate, duration, and audio?
 - Can the user actually access the delivered file?
 
 Correct failed gates and recheck affected shots. Be precise about a source or tool limit that cannot be corrected. Do not equate a successful encode with a cinematic result.
