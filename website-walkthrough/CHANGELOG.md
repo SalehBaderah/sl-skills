@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.3
+
+- Added reusable floating translation and video-plane perspective, with bounded keyframes and smooth neutral holds around interactions.
+- Made gentle motion the default direction for new framed plans while preserving static behavior for existing plans and honoring no-motion requests.
+- Added source cropping and an explicit output canvas, retaining full-source coordinates and undistorted viewport fitting.
+- Added optional targeted mains-hum cleanup and preserved stereo source audio when mixing effects.
+- Added a motion-plan example, motion/readability checks, frame-rate normalization guidance, and installation through the Skills CLI alongside manual installation.
+
 ## 2.2
 
 - Added a featured project/workflow with a visible outcome and an intentional identity/contact closing shot.
