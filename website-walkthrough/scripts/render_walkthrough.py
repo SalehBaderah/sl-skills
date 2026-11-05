@@ -6,6 +6,8 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 from sound_effects import cues, write_effects
+from stage_motion import MotionStage, layout, validate_composition
+from audio_processing import audio_options, validate_audio_processing
 
 
 def probe(path):
@@ -18,7 +20,8 @@ def probe(path):
     rate = v.get('r_frame_rate', '30/1')
     n, d = map(float, rate.split('/')); fps = n / d if d else 30
     if not 1 <= fps <= 120: fps = 30
-    return int(v['width']), int(v['height']), fps, float(data['format']['duration']), any(s['codec_type'] == 'audio' for s in data['streams'])
+    audio = next((s for s in data['streams'] if s['codec_type'] == 'audio'), None)
+    return int(v['width']), int(v['height']), fps, float(data['format']['duration']), audio
 
 
 def smooth(x):
@@ -58,6 +61,8 @@ def validate(plan, duration):
     if plan.get('cursor') and plan.get('source_cursor_visible', True):
         raise ValueError('Cursor overlay requires source_cursor_visible=false after verified cursor removal or a cursor-free source')
     cues(plan, duration)
+    validate_composition(plan, duration)
+    validate_audio_processing(plan)
 
 
 def camera(plan, t):
@@ -84,18 +89,18 @@ def main():
     args = ap.parse_args(); plan = json.loads(args.plan.read_text())
     if args.input.resolve() == args.output.resolve(): raise ValueError('Never overwrite the input')
     if not args.preview_times and args.output.exists(): raise ValueError('Output exists; choose a new filename')
-    w, h, source_fps, duration, has_audio = probe(args.input); validate(plan, duration)
+    w, h, source_fps, duration, audio_stream = probe(args.input); validate(plan, duration)
     fps = args.fps or source_fps
     if not 1 <= fps <= 120: raise ValueError('FPS must be 1..120')
-    ow, oh = w-w%2, h-h%2
-    framed = plan.get('frame', True); margin = .035 if framed else 0
-    sw, sh = int(ow*(1-2*margin)), int(oh*(1-2*margin)); sx, sy = (ow-sw)//2, (oh-sh)//2
+    (ow, oh), (crop_left, crop_top, crop_right, crop_bottom), (sx, sy, sw, sh) = layout(plan, w, h)
+    framed = plan.get('frame', True)
     cv2.setNumThreads(2)
     yy, xx = np.mgrid[0:oh, 0:ow]
     glow = np.exp(-(((xx/ow-.15)/.7)**2+((yy/oh-.1)/.9)**2)*2)
     rgb = np.array([19, 22, 32]) + glow[..., None]*np.array([29, 23, 40])
     back = Image.fromarray(rgb.astype(np.uint8)).convert('RGBA')
     radius = max(2, int(min(sw, sh)*.022)) if framed else 0
+    clean_background = np.array(back.convert('RGB'))[:, :, ::-1].copy()
     if framed:
         shadow = Image.new('RGBA', back.size)
         ImageDraw.Draw(shadow).rounded_rectangle((sx, sy+8, sx+sw, sy+sh+8), radius=radius, fill=(0,0,0,145))
@@ -104,10 +109,11 @@ def main():
     mask = Image.new('L', (sw, sh)); ImageDraw.Draw(mask).rounded_rectangle((0,0,sw-1,sh-1), radius=radius, fill=255)
     alpha = np.array(mask, dtype=np.float32)[..., None]/255
     corners = [(0,0), (sw-radius,0), (0,sh-radius), (sw-radius,sh-radius)]
+    motion = MotionStage(clean_background, alpha, (sx, sy, sw, sh), radius, plan, duration) if plan.get('motion', {}).get('enabled', False) else None
 
     def compose(frame, t):
-        z, x, y = camera(plan,t); vw, vh = w/z, h/z
-        left = float(np.clip(x*w-vw/2,0,w-vw)); top = float(np.clip(y*h-vh/2,0,h-vh))
+        z, x, y = camera(plan,t); vw, vh = (crop_right-crop_left)/z, (crop_bottom-crop_top)/z
+        left = float(np.clip(x*w-vw/2,crop_left,crop_right-vw)); top = float(np.clip(y*h-vh/2,crop_top,crop_bottom-vh))
         ax, ay = sw/vw, sh/vh
         m = np.array([[ax,0,-left*ax],[0,ay,-top*ay]],np.float32)
         screen = cv2.warpAffine(frame,m,(sw,sh),flags=cv2.INTER_LANCZOS4,borderMode=cv2.BORDER_REPLICATE)
@@ -126,6 +132,7 @@ def main():
             points = np.array([[0,0],[0,29],[8,22],[14,35],[20,32],[14,19],[25,19]],float)*scale+[px,py]
             points = points.astype(np.int32)
             cv2.fillPoly(screen,[points],(255,255,255),cv2.LINE_AA);cv2.polylines(screen,[points],True,(25,23,20),max(1,int(2*scale)),cv2.LINE_AA)
+        if motion is not None: return motion.render(screen, t)
         out = background.copy(); region = out[sy:sy+sh,sx:sx+sw]; region[:] = screen
         if framed:
             for cx,cy in corners:
@@ -156,13 +163,8 @@ def main():
     command=['ffmpeg','-hide_banner','-loglevel','warning','-n','-f','rawvideo','-pix_fmt','bgr24','-s',f'{ow}x{oh}','-r',f'{fps:.8f}','-i','-','-i',str(args.input)]
     if sound_cues:
         command += ['-i',str(effects_path),'-map','0:v:0']
-        if has_audio and audio == 'preserve':
-            # Keep original speech; only limit peaks where the mix could clip.
-            command += ['-filter_complex','[1:a:0]aresample=48000,asetpts=PTS-STARTPTS[original];[original][2:a:0]amix=inputs=2:duration=longest:normalize=0,alimiter=limit=0.95:level=false:latency=true[mix]','-map','[mix]']
-        else: command += ['-map','2:a:0']
-        command += ['-c:a','aac','-b:a','192k']
-    elif audio == 'preserve': command += ['-map','0:v:0','-map','1:a:0?','-c:a','aac','-b:a','192k']
-    else: command += ['-map','0:v:0','-an']
+    else: command += ['-map','0:v:0']
+    command += audio_options(plan, audio_stream, bool(sound_cues))
     command+=['-c:v','libx264','-preset','slow','-crf',str(crf),'-pix_fmt','yuv420p','-movflags','+faststart','-map_metadata','-1','-t',str(duration),str(args.output)]
     enc=None; success=False
     try:

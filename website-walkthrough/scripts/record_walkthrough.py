@@ -232,7 +232,7 @@ async def record(args, config):
                     "-an", "-c:v", "ffv1", "-level", "3", str(recording)], check=True)
     info = json.loads(subprocess.check_output(["ffprobe", "-v", "error", "-show_format", "-of", "json", str(recording)]))
     duration = float(info["format"]["duration"])
-    plan = {"frame": True, "audio": "preserve", "crf": 14, "click_highlights": True,
+    plan = {"frame": True, "motion": {"enabled": True}, "audio": "preserve", "crf": 14, "click_highlights": True,
             "camera": [[0, 1, .5, .5], [duration, 1, .5, .5]],
             "sound_effects": {"enabled": True, "volume": .35},
             "source_cursor_visible": bool(config.get("site_draws_cursor", False)),
