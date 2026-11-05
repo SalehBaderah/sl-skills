@@ -2,11 +2,22 @@
   "frame": true,
   "audio": "preserve",
   "sound_effects": {"enabled": true, "volume": 0.35},
-  "crf": 16,
+  "crf": 14,
   "click_highlights": true,
   "source_cursor_visible": true,
   "events": [
-    {"time": 2.0, "x": 0.45, "y": 0.55, "zoom": 1.45, "sound": "click"},
-    {"time": 6.0, "x": 0.88, "y": 0.12, "zoom": 1.6, "sound": "open"}
+    {"time": 3.0, "x": 0.45, "y": 0.55, "sound": "click"},
+    {"time": 8.0, "x": 0.68, "y": 0.45, "sound": "open"}
+  ],
+  "camera": [
+    [0.0, 1.0, 0.5, 0.5],
+    [1.8, 1.0, 0.5, 0.5],
+    [3.2, 1.2, 0.45, 0.5],
+    [5.0, 1.2, 0.45, 0.5],
+    [6.5, 1.0, 0.5, 0.5],
+    [7.0, 1.0, 0.5, 0.5],
+    [8.5, 1.2, 0.6, 0.5],
+    [10.5, 1.2, 0.6, 0.5],
+    [12.0, 1.0, 0.5, 0.5]
   ]
 }

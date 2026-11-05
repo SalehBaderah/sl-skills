@@ -1,62 +1,126 @@
-# Website Walkthrough skill
+# Website Walkthrough
 
-Create polished MP4 demos from **an uploaded recording** or **a live website the agent opens and records**. Includes a portable camera/cursor renderer, generated UI sounds, an optional Playwright recorder, plan references, examples, and tests. Version 2.0.
+An agent skill for cinematic, mockup-style website demo videos. Start with an uploaded recording or let the agent open and record a site. The workflow combines readable framing, deliberate camera moves, eased scrolling, cursor handling, and subtle UI sounds, then verifies and delivers an MP4.
 
-## What's new
+## Installation
 
-- First-use question: **upload a video** or **let the agent open and record the site**. An explicit mode choice in the request skips a repeated question.
-- Seven adjustable sound effects: click, open, close, touch, toggle, type, and success. Effects are generated locally; no downloaded sound library or music. Disable effects while preserving source audio, or mute everything.
-- Browser capture with observed pointer events, smooth pointer moves, a starter edit plan, and synchronization-slate trimming.
+### 1. Add the skill to your agent
 
-## Install
+Download the repository from a branch or release containing this folder, or extract the skill ZIP. Keep the entire `website-walkthrough` folder together, including scripts and references.
 
-Copy the entire `website-walkthrough` folder (the one containing SKILL.md) into your agent's skills directory. For Codex, the usual personal location is `~/.codex/skills/website-walkthrough/`. Reload skills or start a new session if needed. Installation is local; this archive does not install itself into anyone's account.
-
-Rendering requires Python 3.10+, FFmpeg/FFprobe, and `requirements.txt`. Live capture additionally needs `requirements-capture.txt`, Chromium, and Playwright's video encoder. See [SKILL.md](SKILL.md) and [live capture](references/live-capture.md). Always follow the host's tool, network, and installation rules.
-
-## Use
-
-To get the opening choice:
-
-> Use $website-walkthrough to make a product demo.
-
-To choose directly:
-
-> Use $website-walkthrough. I'll upload a video; edit it with subtle click sounds and smooth camera zooms. Preserve speech, add no music, and give me an MP4.
-
-> Use $website-walkthrough. Open and record https://my-site.example, show the navigation and theme switch, then scroll through the features. Add subtle interaction sounds. Use a desktop viewport.
-
-The agent inspects the actual source/site and adapts its plans. Example coordinates, selectors, and timestamps are illustrative, not reusable across websites. The standalone renderer does not discover clicks or remove baked-in cursors. Browser capture needs an environment that can automate and record a browser, reachable pages, and authorized access. Playwright capture omits site/system audio; use an audio-capable recorder or uploaded footage if that matters.
-
-For edge-to-edge output set `frame` to false. Set `sound_effects.enabled` to false for original audio only, or `audio` to `"mute"` for complete silence. Older plans without sound_effects keep their original behavior. See the [edit-plan schema](references/edit-plan.md).
-
-## Developer checks
-
-From this directory after installing rendering dependencies:
+For Codex, copy it into your personal skills directory. Run these commands from the directory containing `website-walkthrough/` (the repository root for a GitHub download):
 
 ```bash
-python -m unittest discover -s tests -v
+mkdir -p ~/.codex/skills
+cp -R website-walkthrough ~/.codex/skills/
 ```
 
-This runs waveform/timing, invalid-plan, FFmpeg mix, source-audio, mute, and backward-compatibility checks. Browser capture is an optional integration test. With capture dependencies and browser installed:
+If upgrading, back up your existing skill folder and local work before replacing it. Reload skills or start a new agent session. For other agents, use their documented skill directory or load `SKILL.md` through their supported mechanism. Installing a skill does not add capabilities the host agent lacks.
+
+### 2. Install rendering dependencies
+
+Requirements: **Python 3.10+**, **FFmpeg with libx264 and FFV1**, and **FFprobe** on PATH. Install FFmpeg using your OS package manager (for example, `brew install ffmpeg` on macOS or `sudo apt-get install ffmpeg` on Debian/Ubuntu), or an official linked build from [ffmpeg.org](https://ffmpeg.org/download.html).
+
+From the installed skill directory:
 
 ```bash
-RUN_BROWSER_TESTS=1 python -m unittest discover -s tests -v
+cd ~/.codex/skills/website-walkthrough
+python3 -m venv work/venv
+work/venv/bin/python -m pip install -r requirements.txt
+ffmpeg -version
+ffprobe -version
 ```
 
-For an existing compatible system Chromium, set `TEST_CHROMIUM_EXECUTABLE` to its executable path. Browser tests use an isolated local demo, not a third-party site. They verify visible state changes against recorded events and fully decode the final render. These tests do not establish compatibility with every website or listening review of the generated sounds.
+On Windows, use your installed skill directory, `py -m venv work/venv`, and `work\venv\Scripts\python.exe` in place of `work/venv/bin/python` throughout the commands below. The Python scripts are portable; shell examples use POSIX syntax.
 
-## Other useful additions
+### 3. Enable live-site capture (optional)
 
-These are recommendations, **not implemented features**:
+For the included Playwright recorder:
 
-1. **Private-data masking:** blur selected fields, emails, names, and notifications with preview review.
-2. **Narration and captions:** optional voice-over, transcript-based captions, and language selection; duck effects under speech.
-3. **Output presets:** desktop, mobile, landscape/portrait/square framing, and platform-specific durations. Reframe instead of cropping important controls.
-4. **Pacing controls:** remove approved idle sections, speed up repetitive input, and preserve meaningful loading states.
-5. **Reusable tour recipes:** configurable routes for feature demos, onboarding, and release notes, with selectors validated each run.
-6. **Review before final export:** a lightweight preview with a shot list and timestamped revision requests.
+```bash
+work/venv/bin/python -m pip install -r requirements-capture.txt
+work/venv/bin/python -m playwright install chromium ffmpeg
+```
+
+On a supported Linux host missing browser libraries, `work/venv/bin/python -m playwright install-deps chromium` may also be needed with administrator permission. Keep network proxy, CA trust, and TLS verification intact. Browser downloads and the target site must be allowed by the host environment. See [live capture](references/live-capture.md) for browser selection and troubleshooting.
+
+A host-provided recorder may be used instead when it supports video export. Prefer a recorder that genuinely supports high-density capture and native 60 fps for premium motion. The bundled Playwright recorder is a portable fallback, usually **25 fps**, with **no website/system audio**. It does not become a 60 fps recorder by changing the export rate.
+
+## Use with an agent
+
+Invoke the skill:
+
+> Use $website-walkthrough to make a cinematic product demo.
+
+The agent first asks whether to edit an uploaded video or open and record a site. If your request explicitly chooses a mode, it proceeds without repeating the question.
+
+**Upload mode:**
+
+> Use $website-walkthrough to edit the attached recording. Make it feel like a premium product mockup: readable UI, smooth focus moves, subtle framing, and click sounds. Preserve the original speech and add no music.
+
+**Record mode:**
+
+> Use $website-walkthrough. Open and record https://example.com. Create a 45–60 second cinematic walkthrough of the main features with deliberate holds, smooth scrolling, and subtle interaction sounds. Prioritize sharp text and native motion quality. Deliver an MP4.
+
+You can specify the feature route, duration, desktop/mobile layout, target aspect ratio, whether to frame the website, and audio preference. The agent inspects the source/site and chooses practical defaults for anything unspecified. Examples use placeholder sites and illustrative timestamps; they are not reusable routes for arbitrary websites.
+
+## What the cinematic workflow does
+
+- Tests capture quality before a full live tour; uses real source detail and the available recorder's native frame rate.
+- Makes the product prominent with a slim rounded frame, shadow, and subdued backdrop, or edge-to-edge output.
+- Plans 3–5 feature beats, readable holds, and gentle focus moves around content and outcomes.
+- Keeps one cursor and supports click, open, close, touch, toggle, type, and success sounds.
+- Uses a lossless working intermediate and one final H.264 delivery encode after capture.
+- Reviews readability, motion, framing, sound, decoding, and file access before delivery.
+
+The supplied renderer supports **2D** camera movement and a flat mockup stage. It does not generate 3D device renders, recover lost detail, remove baked-in cursors automatically, discover click events in an upload, or add narration/captions. Advanced compositing needs a separate suitable tool. Read the [cinematic quality standard](references/cinematic-quality.md) for the full direction and quality gates.
+
+## Run the tools manually
+
+From the skill directory after installation:
+
+1. Save your source as `work/input.mp4` and create `work/plan.json` using the [edit-plan schema](references/edit-plan.md). Adapt `examples/plan.json` to the actual clip before running it.
+2. Inspect previews at timestamps that exist in your clip:
+
+   ```bash
+   work/venv/bin/python scripts/render_walkthrough.py work/input.mp4 --plan work/plan.json --output work/previews --preview-times 0 2 5
+   ```
+
+3. Export:
+
+   ```bash
+   work/venv/bin/python scripts/render_walkthrough.py work/input.mp4 --plan work/plan.json --output output/walkthrough.mp4
+   ```
+
+For live capture, first inspect the site and create `work/capture.json`; `examples/capture.json` demonstrates a read-only route:
+
+```bash
+work/venv/bin/python scripts/record_walkthrough.py --script work/capture.json --output-dir work/capture
+work/venv/bin/python scripts/render_walkthrough.py work/capture/source.mkv --plan work/capture/plan.json --output output/walkthrough.mp4
+```
+
+Before that final render, review the captured video and edit its starter `plan.json` into the intended camera sequence. It starts with a stable wide shot so clicks do not automatically drag the camera toward navigation. Each capture attempt needs a new output directory. FFV1 intermediates are large; keep adequate disk space. Original uploads and previously captured MP4 files remain supported.
+
+Set `frame: false` for edge-to-edge output, `sound_effects.enabled: false` for original audio only, or `audio: "mute"` for complete silence. New plans use CRF 14; older plans retain the renderer's CRF 16 default when omitted. Output preserves source dimensions and rate. Changing aspect ratio or trimming time requires preparation in another editing tool and a plan matched to that prepared source.
+
+The scripts write local files. Your agent's attachment or an authorized file host is required to share a video; a workspace path is not a public download link. Keep session state, private footage, capture plans, and credentials out of shared packages and commits.
+
+## Development
+
+With rendering dependencies installed:
+
+```bash
+work/venv/bin/python -m unittest discover -s tests -v
+```
+
+The browser integration test is optional. Install capture dependencies and browsers, then run:
+
+```bash
+RUN_BROWSER_TESTS=1 work/venv/bin/python -m unittest discover -s tests -v
+```
+
+For a compatible system Chromium, set `TEST_CHROMIUM_EXECUTABLE` to its executable path. These tests exercise local fixtures and encoding behavior; visual direction and listening still need review of the actual output.
 
 ## License
 
-MIT; see LICENSE. Original notice retained. Effects are synthesized by the included code. Hosting services, agent software, browsers, and dependencies have their own terms. No accounts, credentials, user footage, or private URLs are bundled.
+MIT; see [LICENSE](LICENSE). Browser, FFmpeg, Python dependency, and hosting-service terms apply separately.
