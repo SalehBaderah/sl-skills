@@ -9,10 +9,10 @@ An agent skill for cinematic, mockup-style website demo videos. Start with an up
 With Node.js and npm installed, use the [Skills CLI](https://skills.sh/docs/cli):
 
 ```bash
-npx skills add https://github.com/Sl-15-dev/sl-skills/tree/work --skill website-walkthrough --agent codex
+npx skills add https://github.com/Sl-15-dev/sl-skills/tree/main --skill website-walkthrough --agent codex
 ```
 
-This installs for Codex in the current project from the `work` branch, which contains the skill. Add `--global` for a personal installation across projects, or omit `--agent codex` to choose another supported agent. Add `--yes` to skip confirmation prompts when automating installation. Reload skills or start a new agent session afterward. To upgrade a CLI-managed installation, run `npx skills update`; back up local edits and work first. The CLI installs skill files; Python, FFmpeg, and optional browser dependencies are separate steps below.
+This installs for Codex in the current project from the `main` branch. Add `--global` for a personal installation across projects, or omit `--agent codex` to choose another supported agent. Add `--yes` to skip confirmation prompts when automating installation. Reload skills or start a new agent session afterward. To upgrade a CLI-managed installation, run `npx skills update`; back up local edits and work first. The CLI installs skill files; Python, FFmpeg, and optional browser dependencies are separate steps below.
 
 **Manual alternative:** download a branch or release containing this folder, or extract the skill ZIP. Keep the entire `website-walkthrough` folder together, including scripts, examples, and references.
 
