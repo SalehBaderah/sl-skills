@@ -1,0 +1,38 @@
+{
+  "source": "references/ai-pioneers-guidelines-v2.pdf",
+  "source_page_one_based": 6,
+  "source_sha256": "a66818abdd29f1f1d8b103fcea36522a413283e9d6b3d587b88803f260bc677e",
+  "method": "Original PDF filled cubic/line paths; no raster tracing or generative reconstruction",
+  "matches": "User-provided standalone white emblem on black, visually compared",
+  "path_count": 7,
+  "geometry_sha256": "2c1bea352eea1d12382b81d7e58e25ef0137cdc3110546fc5a9c6c0faf2fb640",
+  "viewBox": [
+    254.60298767089844,
+    451.2340148925781,
+    180.07001037597655,
+    146.2119934082031
+  ],
+  "variants": {
+    "white": {
+      "fill": "#FFFFFF",
+      "svg": "aip-emblem-white.svg",
+      "png": "aip-emblem-white.png"
+    },
+    "purple": {
+      "fill": "#4A3B68",
+      "svg": "aip-emblem-purple.svg",
+      "png": "aip-emblem-purple.png"
+    },
+    "dark-purple": {
+      "fill": "#2F2447",
+      "svg": "aip-emblem-dark-purple.svg",
+      "png": "aip-emblem-dark-purple.png"
+    },
+    "navy": {
+      "fill": "#020624",
+      "svg": "aip-emblem-navy.svg",
+      "png": "aip-emblem-navy.png"
+    }
+  },
+  "notes": "White/purple variants are evidenced on guideline pages 6/11. Dark-purple/navy are user-authorized AIP-palette color variants; all preserve identical geometry. No wordmark synthesized."
+}

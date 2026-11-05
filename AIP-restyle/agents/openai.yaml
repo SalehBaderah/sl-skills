@@ -1,0 +1,16 @@
+interface:
+  display_name: AI Pioneers Restyler
+  short_description: AIP palette and visible logos integrated into designs
+  default_prompt: Use $restyle-ai-pioneers to adapt this design to the AI Pioneers
+    palette and integrate the exact bundled team emblem into the requested shirt,
+    object, or native branding area. Preserve medium, subject, text, data, layout,
+    and transparency, and display the actual final branded output.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
