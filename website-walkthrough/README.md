@@ -60,7 +60,7 @@ The agent first asks whether to edit an uploaded video or open and record a site
 
 **Record mode:**
 
-> Use $website-walkthrough. Open and record https://example.com. Create a 45–60 second cinematic walkthrough of the main features with deliberate holds, smooth scrolling, and subtle interaction sounds. Prioritize sharp text and native motion quality. Deliver an MP4.
+> Use $website-walkthrough. Open and record https://example.com. Create a brisk 30-second cinematic walkthrough: introduce the site, open one featured project, show its strongest result, and finish on the real contact invitation. Keep headings and cards complete, let navigation settle before zooming, and add subtle interaction sounds. Deliver an MP4.
 
 You can specify the feature route, duration, desktop/mobile layout, target aspect ratio, whether to frame the website, and audio preference. The agent inspects the source/site and chooses practical defaults for anything unspecified. Examples use placeholder sites and illustrative timestamps; they are not reusable routes for arbitrary websites.
 
@@ -68,7 +68,9 @@ You can specify the feature route, duration, desktop/mobile layout, target aspec
 
 - Tests capture quality before a full live tour; uses real source detail and the available recorder's native frame rate.
 - Makes the product prominent with a slim rounded frame, shadow, and subdued backdrop, or edge-to-edge output.
-- Plans 3–5 feature beats, readable holds, and gentle focus moves around content and outcomes.
+- Plans one featured project/workflow, focused supporting beats, and a real contact invitation or next step for the ending.
+- Varies reading holds to match the requested pace. Short showcases start around 25–35 seconds; detailed tours can run longer.
+- Frames complete sections and waits for navigation to settle before zooming.
 - Keeps one cursor and supports click, open, close, touch, toggle, type, and success sounds.
 - Uses a lossless working intermediate and one final H.264 delivery encode after capture.
 - Reviews readability, motion, framing, sound, decoding, and file access before delivery.
@@ -99,7 +101,7 @@ work/venv/bin/python scripts/record_walkthrough.py --script work/capture.json --
 work/venv/bin/python scripts/render_walkthrough.py work/capture/source.mkv --plan work/capture/plan.json --output output/walkthrough.mp4
 ```
 
-Before that final render, review the captured video and edit its starter `plan.json` into the intended camera sequence. It starts with a stable wide shot so clicks do not automatically drag the camera toward navigation. Each capture attempt needs a new output directory. FFV1 intermediates are large; keep adequate disk space. Original uploads and previously captured MP4 files remain supported.
+Before that final render, review the captured video and edit its starter `plan.json` into the intended camera sequence. It starts with a stable wide shot so clicks do not automatically drag the camera toward navigation. Keep this view during navigation; focus only after the destination has settled. Capture pauses provide editing headroom; shorten idle time and match the camera/events to the prepared timeline when making a brisk cut. Each capture attempt needs a new output directory. FFV1 intermediates are large; keep adequate disk space. Original uploads and previously captured MP4 files remain supported.
 
 Set `frame: false` for edge-to-edge output, `sound_effects.enabled: false` for original audio only, or `audio: "mute"` for complete silence. New plans use CRF 14; older plans retain the renderer's CRF 16 default when omitted. Output preserves source dimensions and rate. Changing aspect ratio or trimming time requires preparation in another editing tool and a plan matched to that prepared source.
 

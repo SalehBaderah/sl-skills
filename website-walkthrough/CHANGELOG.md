@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2
+
+- Added a featured project/workflow with a visible outcome and an intentional identity/contact closing shot.
+- Added complete-section framing and settled navigation before camera zooms.
+- Made pacing responsive to feedback: brisk showcases start around 25–35 seconds, with varied holds and longer detailed tours when appropriate.
+- Clarified capture headroom, safe timeline retiming, and final checks for storytelling and shot boundaries.
+- Extended the browser integration check to cover a featured project's detail page, its visible result, and a contact closing shot.
+
 ## 2.1
 
 - Added cinematic mockup direction, a capture pilot, readability and motion quality gates, and content-led camera choreography.
