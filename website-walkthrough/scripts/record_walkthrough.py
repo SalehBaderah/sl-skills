@@ -104,16 +104,22 @@ async def run_actions(page, config, state):
                 else: value = step["value"]
                 await target.fill(value)
         elif action == "scroll":
-            ticks = 16
-            for _ in range(ticks):
-                await page.mouse.wheel(step.get("dx", 0)/ticks, step.get("dy", 500)/ticks)
-                await asyncio.sleep(.035)
+            duration = step.get("duration", 1.6)
+            ticks = max(16, round(duration*30))
+            previous = 0
+            for i in range(1, ticks+1):
+                t = i/ticks
+                eased = t*t*(3-2*t)
+                delta = eased-previous
+                await page.mouse.wheel(step.get("dx", 0)*delta, step.get("dy", 500)*delta)
+                previous = eased
+                await asyncio.sleep(duration/ticks)
         elif action == "goto":
             await page.goto(step["url"], wait_until="domcontentloaded")
         elif action == "wait":
             await asyncio.sleep(step.get("seconds", 1))
             continue
-        await asyncio.sleep(step.get("pause", .65))
+        await asyncio.sleep(step.get("pause", 2.5))
 
 
 def trim_start(raw):
@@ -150,15 +156,17 @@ def validate(config):
         if type(value) is not int or not 240 <= value <= 3840 or value % 2:
             raise ValueError("Viewport dimensions must be even integers in 240..3840")
     if not isinstance(config.get("steps"), list): raise ValueError("steps must be a list")
-    finite(config.get("initial_hold", .6), 0, 60, "initial_hold")
-    finite(config.get("end_hold", 1.2), 0, 60, "end_hold")
+    finite(config.get("settle", 1), 0, 60, "settle")
+    finite(config.get("initial_hold", 2.5), 0, 60, "initial_hold")
+    finite(config.get("end_hold", 3), 0, 60, "end_hold")
     for step in config["steps"]:
         if not isinstance(step, dict) or step.get("action") not in {"click", "tap", "hover", "fill", "press", "wait_for", "scroll", "wait", "goto"}:
             raise ValueError("Unsupported capture action")
         if step.get("sound", "click") not in EFFECTS | {"none"}: raise ValueError("Unsupported step sound")
-        finite(step.get("pause", .65), 0, 60, "pause")
+        finite(step.get("pause", 2.5), 0, 60, "pause")
         if step["action"] == "wait": finite(step.get("seconds", 1), 0, 60, "wait seconds")
         if step["action"] == "scroll":
+            finite(step.get("duration", 1.6), .2, 30, "scroll duration")
             finite(step.get("dx", 0), -10000, 10000, "scroll dx")
             finite(step.get("dy", 500), -10000, 10000, "scroll dy")
         if step["action"] == "goto": web_url(step["url"])
@@ -192,7 +200,7 @@ async def record(args, config):
         try:
             context = await browser.new_context(
                 viewport=size, record_video_dir=str(raw_dir), record_video_size=size,
-                device_scale_factor=1, has_touch=True,
+                device_scale_factor=1, has_touch=any(s["action"] == "tap" for s in config["steps"]),
                 storage_state=str(args.storage_state) if args.storage_state else None,
             )
             await context.expose_binding("__walkthroughEvent", receive)
@@ -205,9 +213,9 @@ async def record(args, config):
             await asyncio.sleep(.6)
             state["origin"] = await page.evaluate(REMOVE_MARKER)
             cursor.append([0, .5, .5])
-            await asyncio.sleep(config.get("initial_hold", .6))
+            await asyncio.sleep(config.get("initial_hold", 2.5))
             await run_actions(page, config, state)
-            await asyncio.sleep(config.get("end_hold", 1.2))
+            await asyncio.sleep(config.get("end_hold", 3))
             video = page.video
             await context.close()
             context = None
@@ -217,13 +225,15 @@ async def record(args, config):
             await browser.close()
 
     cut, fps = trim_start(raw)
-    recording = args.output_dir/"source.mp4"
+    # Keep the preparation step lossless. The final renderer performs the H.264
+    # delivery encode; another H.264 generation here would soften text twice.
+    recording = args.output_dir/"source.mkv"
     subprocess.run(["ffmpeg", "-v", "error", "-n", "-ss", str(cut), "-i", str(raw),
-                    "-an", "-c:v", "libx264", "-crf", "16", "-preset", "medium",
-                    "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(recording)], check=True)
+                    "-an", "-c:v", "ffv1", "-level", "3", str(recording)], check=True)
     info = json.loads(subprocess.check_output(["ffprobe", "-v", "error", "-show_format", "-of", "json", str(recording)]))
     duration = float(info["format"]["duration"])
-    plan = {"frame": True, "audio": "preserve", "crf": 16, "click_highlights": True,
+    plan = {"frame": True, "audio": "preserve", "crf": 14, "click_highlights": True,
+            "camera": [[0, 1, .5, .5], [duration, 1, .5, .5]],
             "sound_effects": {"enabled": True, "volume": .35},
             "source_cursor_visible": bool(config.get("site_draws_cursor", False)),
             "events": [e for e in events if e["time"] <= duration]}

@@ -4,9 +4,9 @@ Use this path only after the user's input-mode choice. The agent can explore a U
 
 ## Choose a recorder
 
-Prefer a host browser tool if it supports **actual video recording/export** plus interaction metadata. A browsing tool that supplies only screenshots does not establish that it can record video. Otherwise use the included Playwright helper. Follow the host's browser rules and networking policy. Do not bypass a mandated browser tool with a different browser. If neither route is supported, ask for uploaded footage.
+Follow the capture selection and pilot checks in [cinematic quality](cinematic-quality.md). Prefer a permitted host recorder with genuinely sharp, high-density output and native 60 fps when supported. A tool that supplies only screenshots does not establish that it can record video. Otherwise use the included Playwright helper as a portable fallback. Follow the host's browser rules and networking policy. If neither route is supported, ask for uploaded footage.
 
-The helper records a single Chromium viewport. It does not capture browser chrome, microphone/system/site audio, new tabs, native dialogs, or full desktop apps. Iframe and keyboard actions can appear in the video but their pointer metadata may be incomplete. Inspect those manually. It records at the browser encoder's actual rate (commonly 25 fps), not an assumed 60 fps. It does not promise lossless capture. Larger viewports cost more time and storage; start at 1440×900, or use an even-sized mobile viewport when requested. A mobile viewport and tap support alone do not emulate an entire mobile device.
+The helper records a single Chromium viewport. It does not capture browser chrome, microphone/system/site audio, new tabs, native dialogs, or full desktop apps. Iframe and keyboard actions can appear in the video but their pointer metadata may be incomplete. Inspect those manually. It records lossy browser video at the encoder's actual rate (commonly 25 fps), then prepares a lossless FFV1 working file. This avoids another lossy generation but does not restore detail lost in the browser capture. It uses device scale 1; it is not a high-density/60 fps recorder. Start by testing a 1280–1440 CSS-pixel-wide layout, keeping content large; use an even-sized mobile viewport when requested. A mobile viewport and tap support alone do not emulate an entire mobile device.
 
 ## Install (only for browser capture)
 
@@ -38,11 +38,11 @@ Each target selects exactly one kind: `{role, name}`, `{text}`, `{test_id}`, or 
 | fill | target and either value (non-sensitive demo data) or value_env (an already authorized runtime variable name); never save credentials in a script |
 | press | target and key, e.g. "ArrowDown"; avoid triggering unauthorized submissions |
 | wait_for | target; waits until visible |
-| scroll | dy (default 500 pixels), optional dx and pause; smooth wheel sequence |
+| scroll | dy (default 500 pixels), optional dx, duration (default 1.6 seconds, range 0.2–30), and pause; eased wheel sequence |
 | wait | seconds (default 1, at most 60) |
 | goto | url; use only within the authorized route |
 
-`pause` defaults to 0.65 seconds after each action other than wait/wait_for. Top-level `settle` (default 1 second) allows the initial page to settle before recording the tour; `initial_hold` (0.6) and `end_hold` (1.2) add readable pauses. These waits do not replace checking actual loaded state. `site_draws_cursor: true` disables the replacement cursor for sites that already draw one. Pointer-down events default to `sound: "click"`; use `open`, `close`, `touch`, `toggle`, `success`, or `none` only when accurate. Hover/scroll/fill/keyboard actions do not automatically produce sound cues. Add manually verified independent sounds in the edit plan if needed.
+`pause` defaults to 2.5 seconds after each action other than wait/wait_for. Top-level `settle` (default 1 second) allows the initial page to settle before recording the tour; `initial_hold` (2.5) and `end_hold` (3) add readable pauses. Increase holds to 3–5 seconds for dense content. These waits do not replace checking fonts, images, and actual loaded state. `site_draws_cursor: true` disables the replacement cursor for sites that already draw one. Touch support is enabled only for routes containing tap actions. Pointer-down events default to `sound: "click"`; use `open`, `close`, `touch`, `toggle`, `success`, or `none` only when accurate. Hover/scroll/fill/keyboard actions do not automatically produce sound cues. Add manually verified independent sounds in the edit plan if needed.
 
 Use only provided or already authorized login sessions. The helper accepts `--storage-state work/session.json` for sensitive, authorized Playwright session state, and `--headed` for hosts with a display. Never package, commit, print, or deliver session files, tokens, passwords, or private capture plans. If interactive login, MFA, CAPTCHA, or site policy prevents capture, pause for authorized user assistance or use uploaded footage. No stealth or access-control bypass is part of this skill.
 
@@ -50,10 +50,12 @@ Use only provided or already authorized login sessions. The helper accepts `--st
 
 ```bash
 work/venv/bin/python scripts/record_walkthrough.py --script work/capture.json --output-dir work/capture
-work/venv/bin/python scripts/render_walkthrough.py work/capture/source.mp4 --plan work/capture/plan.json --output output/walkthrough.mp4
+work/venv/bin/python scripts/render_walkthrough.py work/capture/source.mkv --plan work/capture/plan.json --output output/walkthrough.mp4
 ```
 
-Choose a fresh output directory for each attempt. The helper retains raw browser footage under `raw/`, trims a temporary two-color synchronization slate, and writes `source.mp4`, `plan.json`, and `capture-info.json`. It logs observed main-frame pointer events without page text or typed values. Do not deliver raw footage, which can contain initial private UI and the slate. This helper does not collect or save authentication state.
+Choose a fresh output directory for each attempt. The helper retains raw browser footage under `raw/`, trims a temporary two-color synchronization slate, and writes `source.mkv`, `plan.json`, and `capture-info.json`. Keep enough disk space for the FFV1 intermediate; it can be much larger than the final MP4. It logs observed main-frame pointer events without page text or typed values. Do not deliver raw footage, which can contain initial private UI and the slate. This helper does not collect or save authentication state.
+
+Before rendering, inspect the source and replace the starter plan's fixed-wide camera keys with deliberate focus/hold/release shots. Clicks retain highlights and sound without moving the camera automatically. Frame the resulting content, not just the pointer location. Keep the wide shot when a move would hurt readability. New plans use CRF 14 for the single final H.264 delivery encode; the renderer still accepts older MP4 inputs and plans.
 
 The slate aligns the event clock to the saved video; asynchronous screencasting can still introduce a few frames of latency. Review source frames against the plan and correct any offsets. Recorded pointer events indicate input, not proof that a menu opened or a transaction succeeded. Check the visible outcome before selecting an open/success effect. Revisit zooms to include both targets and resulting content, merge repetitive interactions, and verify custom cursors before drawing an overlay. Inspect any CSS hover effects affected by pointer/touch support.
 
