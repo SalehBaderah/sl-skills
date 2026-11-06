@@ -3,7 +3,7 @@ name: restyle-ai-pioneers
 description: Transform existing designs into the AI Pioneers / AIP (رواد الذكاء الاصطناعي) identity using its navy-purple palette and exact bundled team emblem. Use for photographs, memes, pixel art, icons, illustrations, 3D objects, posters, social graphics, slides, charts, packaging, and editable vector or UI designs when the user asks for AIP styling. Preserve subject, content, medium, and useful structure. Use the bundled identity unless the user explicitly supplies another one. Do not use for unrelated edits or general brand strategy.
 ---
 
-# AI Pioneers Restyler · v2.1
+# AIP Restyle · v2.1
 
 Deliver a finished AIP version of the user's design, not just advice or an edit prompt. Adapt the treatment to the source; AIP is a visual identity, not one rendering style. Integrate the bundled team emblem into a suitable surface or native branding area. A requested shirt/laptop placement must appear on that object, not as a separate footer. Keep the original and save a new version.
 
