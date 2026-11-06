@@ -1,5 +1,5 @@
 interface:
-  display_name: AI Pioneers Restyler
+  display_name: AIP Restyle
   short_description: AIP palette and visible logos integrated into designs
   default_prompt: Use $restyle-ai-pioneers to adapt this design to the AI Pioneers
     palette and integrate the exact bundled team emblem into the requested shirt,
