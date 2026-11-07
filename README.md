@@ -42,4 +42,3 @@ Keep the UI readable, add a rounded frame, and preserve the original audio.
 
 ---
 
-Looking for AIP Restyle? It now lives in [Sl-15-dev/aip-restyle](https://github.com/Sl-15-dev/aip-restyle).
