@@ -13,7 +13,7 @@ Useful for portfolios, landing pages, dashboards, and product demos.
 With Node.js and npm installed, run from your project directory:
 
 ```bash
-npx skills add https://github.com/Sl-15-dev/sl-skills/tree/main --skill website-walkthrough --agent codex
+npx skills add https://github.com/SalehBaderah/sl-skills/tree/main --skill website-walkthrough --agent codex
 ```
 
 Add `--global` to install across projects. Reload skills or start a new agent session after installation.
