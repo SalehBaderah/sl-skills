@@ -88,7 +88,8 @@ def audio_options(plan, source_audio_stream_or_none, has_effects):
     if source is None:
         if not has_effects:
             return ["-an"]
-        return ["-map", "2:a:0"] + _encode_options(1, "mono")
+        # The bundled effects WAV is stereo (gently panned); keep that width.
+        return ["-map", "2:a:0"] + _encode_options(2, "stereo")
 
     channels, layout = _source_layout(source)
     cleanup = plan.get("audio_cleanup", {})

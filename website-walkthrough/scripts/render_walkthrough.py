@@ -29,13 +29,58 @@ def smooth(x):
     return x*x*x*(x*(x*6-15)+10)
 
 
-def interpolate(keys, t):
-    if t <= keys[0][0]: return np.array(keys[0][1:], float)
-    for a, b in zip(keys, keys[1:]):
-        if t <= b[0]:
-            f = smooth((t-a[0])/(b[0]-a[0]))
-            return np.array(a[1:])*(1-f)+np.array(b[1:])*f
-    return np.array(keys[-1][1:], float)
+def _pchip_slopes(times, values):
+    """Monotone cubic (Fritsch-Carlson) slopes: no overshoot, flat at holds."""
+    h = np.diff(times); d = np.diff(values, axis=0)/h[:, None]
+    m = np.zeros_like(values)
+    for k in range(1, len(times)-1):
+        a, b = d[k-1], d[k]
+        w1, w2 = 2*h[k]+h[k-1], h[k]+2*h[k-1]
+        with np.errstate(divide='ignore', invalid='ignore'):
+            m[k] = np.where(a*b > 0, (w1+w2)/(w1/a+w2/b), 0)
+    return m  # endpoints stay at 0: start and finish at rest
+
+
+def interpolate(keys, t, log_zoom=False):
+    """Camera path: continuous velocity through keys, rest only at holds/ends.
+
+    Equal-value neighbouring keys produce a still hold. Zoom is interpolated in
+    log space so magnification changes at a perceptually constant rate.
+    """
+    keys = np.asarray(keys, float)
+    times, values = keys[:, 0], keys[:, 1:].copy()
+    if log_zoom: values[:, 0] = np.log(values[:, 0])
+    if t <= times[0] or len(keys) == 1: out = values[0].copy()
+    elif t >= times[-1]: out = values[-1].copy()
+    else:
+        k = int(np.searchsorted(times, t))-1
+        m = _pchip_slopes(times, values)
+        h = times[k+1]-times[k]; s = (t-times[k])/h
+        h00, h10, h01, h11 = 2*s**3-3*s**2+1, s**3-2*s**2+s, -2*s**3+3*s**2, s**3-s**2
+        out = h00*values[k]+h10*h*m[k]+h01*values[k+1]+h11*h*m[k+1]
+    if log_zoom: out[0] = np.exp(out[0])
+    return out
+
+
+def cursor_position(keys, t):
+    """Dense pointer samples: linear interpolation, so the cursor never micro-stops."""
+    keys = np.asarray(keys, float)
+    return np.array([np.interp(t, keys[:, 0], keys[:, 1]), np.interp(t, keys[:, 0], keys[:, 2])])
+
+
+def backdrop_color(plan, first_frame):
+    """Backdrop that matches the site: auto (from brightness), dark, light, or #rrggbb."""
+    choice = plan.get('background', 'auto')
+    if isinstance(choice, str) and len(choice) == 7 and choice.startswith('#'):
+        r, g, b = (int(choice[i:i+2], 16) for i in (1, 3, 5))
+        base = np.array([b, g, r], float)
+        return base, np.clip(base+(22 if base.mean() < 128 else -18), 0, 255)
+    if choice == 'auto':
+        light = first_frame is not None and float(first_frame.mean()) > 150
+        choice = 'light' if light else 'dark'
+    if choice == 'light':
+        return np.array([236, 233, 230], float), np.array([250, 248, 246], float)
+    return np.array([32, 22, 19], float), np.array([72, 45, 48], float)
 
 
 def validate(plan, duration):
@@ -60,13 +105,19 @@ def validate(plan, duration):
         if not 1 <= e.get('zoom', 1.5) <= 3: raise ValueError('Invalid event zoom')
     if plan.get('cursor') and plan.get('source_cursor_visible', True):
         raise ValueError('Cursor overlay requires source_cursor_visible=false after verified cursor removal or a cursor-free source')
+    bg = plan.get('background', 'auto')
+    if not (bg in ('auto', 'dark', 'light') or (isinstance(bg, str) and len(bg) == 7 and bg[0] == '#' and all(c in '0123456789abcdefABCDEF' for c in bg[1:]))):
+        raise ValueError('background must be auto, dark, light, or #rrggbb')
+    if not isinstance(plan.get('auto_camera', False), bool): raise ValueError('auto_camera must be true or false')
     cues(plan, duration)
     validate_composition(plan, duration)
     validate_audio_processing(plan)
 
 
 def camera(plan, t):
-    if plan.get('camera'): return interpolate(plan['camera'], t)
+    if plan.get('camera'): return interpolate(plan['camera'], t, log_zoom=True)
+    # Zooming on every click causes zoom pumping and cursor chasing; opt-in only.
+    if not plan.get('auto_camera', False): return np.array([1, .5, .5])
     weights, centers, zooms = [], [], []
     for e in plan.get('events', []):
         age = t-e['time']
@@ -95,21 +146,25 @@ def main():
     (ow, oh), (crop_left, crop_top, crop_right, crop_bottom), (sx, sy, sw, sh) = layout(plan, w, h)
     framed = plan.get('frame', True)
     cv2.setNumThreads(2)
+    cap0 = cv2.VideoCapture(str(args.input)); ok0, first = cap0.read(); cap0.release()
+    base, peak = backdrop_color(plan, first if ok0 else None)
     yy, xx = np.mgrid[0:oh, 0:ow]
     glow = np.exp(-(((xx/ow-.15)/.7)**2+((yy/oh-.1)/.9)**2)*2)
-    rgb = np.array([19, 22, 32]) + glow[..., None]*np.array([29, 23, 40])
-    back = Image.fromarray(rgb.astype(np.uint8)).convert('RGBA')
+    bgr = base + glow[..., None]*(peak-base)
+    back = Image.fromarray(bgr[..., ::-1].astype(np.uint8)).convert('RGBA')
     radius = max(2, int(min(sw, sh)*.022)) if framed else 0
     clean_background = np.array(back.convert('RGB'))[:, :, ::-1].copy()
+    shadow_offset = max(2, round(oh*.008))
+    shadow_strength = 145 if base.mean() < 128 else 70
     if framed:
         shadow = Image.new('RGBA', back.size)
-        ImageDraw.Draw(shadow).rounded_rectangle((sx, sy+8, sx+sw, sy+sh+8), radius=radius, fill=(0,0,0,145))
+        ImageDraw.Draw(shadow).rounded_rectangle((sx, sy+shadow_offset, sx+sw, sy+sh+shadow_offset), radius=radius, fill=(0,0,0,shadow_strength))
         back = Image.alpha_composite(back, shadow.filter(ImageFilter.GaussianBlur(max(2, ow*.012))))
     background = np.array(back.convert('RGB'))[:, :, ::-1].copy()
     mask = Image.new('L', (sw, sh)); ImageDraw.Draw(mask).rounded_rectangle((0,0,sw-1,sh-1), radius=radius, fill=255)
     alpha = np.array(mask, dtype=np.float32)[..., None]/255
     corners = [(0,0), (sw-radius,0), (0,sh-radius), (sw-radius,sh-radius)]
-    motion = MotionStage(clean_background, alpha, (sx, sy, sw, sh), radius, plan, duration) if plan.get('motion', {}).get('enabled', False) else None
+    motion = MotionStage(clean_background, alpha, (sx, sy, sw, sh), radius, plan, duration, shadow_offset, shadow_strength) if plan.get('motion', {}).get('enabled', False) else None
 
     def compose(frame, t):
         z, x, y = camera(plan,t); vw, vh = (crop_right-crop_left)/z, (crop_bottom-crop_top)/z
@@ -127,7 +182,7 @@ def main():
                     cv2.circle(overlay,pos,r,(255,222,180),max(1,ow//960),cv2.LINE_AA)
                     a = .65*(1-age/.45)**1.5; screen = cv2.addWeighted(overlay,a,screen,1-a,0)
         if plan.get('cursor'):
-            x,y = interpolate(plan['cursor'],t); px,py = (x*w-left)*ax,(y*h-top)*ay
+            x,y = cursor_position(plan['cursor'],t); px,py = (x*w-left)*ax,(y*h-top)*ay
             scale = max(.6,ow/1920)
             points = np.array([[0,0],[0,29],[8,22],[14,35],[20,32],[14,19],[25,19]],float)*scale+[px,py]
             points = points.astype(np.int32)
@@ -151,7 +206,7 @@ def main():
         finally: cap.release()
         return
     args.output.parent.mkdir(parents=True,exist_ok=True)
-    crf=plan.get('crf',16)
+    crf=plan.get('crf',14)
     if not isinstance(crf,int) or not 0 <= crf <= 28: raise ValueError('CRF must be integer 0..28')
     audio=plan.get('audio','preserve')
     if audio not in ('preserve','mute'): raise ValueError('audio must be preserve or mute')

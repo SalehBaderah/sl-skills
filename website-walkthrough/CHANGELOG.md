@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.4
+
+- **Sound:** replaced sine-beep effects with natural filtered-noise clicks plus a soft low body, mallet-style open/close/success tones, per-hit variation (no identical "machine-gun" repeats), gentle stereo panning by click position, and soft-clipping. Fixed a phase-jump pop in `toggle`. Default volume lowered from 0.35 to 0.25.
+- **Camera:** keyframes now follow a monotone cubic path (no stop-and-go at every key, no overshoot) with zoom interpolated in log space. Per-click auto-zoom is now opt-in (`auto_camera`).
+- **Cursor:** overlay interpolates pointer samples linearly, removing micro-stutter.
+- **Sharpness:** settled motion poses (interactions, reading holds) composite directly and skip the second resample.
+- **Backdrop:** new `background` option (auto/dark/light/#rrggbb); auto picks light or dark from the source. Shadow offset now scales with resolution.
+- **Capture:** recorder renders at device scale 2 by default (`scale`), with smoother 60 Hz scroll and pointer steps.
+- Renderer CRF default aligned with docs (14).
+
 ## 2.3
 
 - Added reusable floating translation and video-plane perspective, with bounded keyframes and smooth neutral holds around interactions.

@@ -1,0 +1,11 @@
+# Personal course data created by create-your-own-course
+courses/
+
+# Python / tooling
+__pycache__/
+*.py[cod]
+.venv/
+work/
+.DS_Store
+Thumbs.db
+

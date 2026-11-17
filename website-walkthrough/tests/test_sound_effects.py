@@ -28,7 +28,7 @@ class SoundTests(unittest.TestCase):
             write_effects(path, [(.25, "touch", .3), (.98, "open", .3)], 1)
             with wave.open(str(path)) as w:
                 self.assertEqual(w.getnframes(), SAMPLE_RATE)
-                samples = np.frombuffer(w.readframes(w.getnframes()), dtype="<i2")
+                samples = np.abs(np.frombuffer(w.readframes(w.getnframes()), dtype="<i2").astype(int)).reshape(-1, 2).max(axis=1)
             self.assertFalse(np.any(samples[:12000]))
             self.assertGreater(int(np.max(np.abs(samples[12000:16000]))), 100)
             self.assertFalse(np.any(samples[20000:46000]))
@@ -39,7 +39,7 @@ class SoundTests(unittest.TestCase):
         plan = {"events": [event]}
         self.assertEqual(cues(plan, 1), [])
         plan["sound_effects"] = {"enabled": True}
-        self.assertEqual(cues(plan, 1), [(.5, "click", .35)])
+        self.assertEqual(cues(plan, 1), [(.5, "click", .25, 0)])
         plan["audio"] = "mute"
         self.assertEqual(cues(plan, 1), [])
         plan["audio"] = "preserve"

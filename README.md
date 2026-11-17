@@ -7,7 +7,7 @@ Reusable agent skills by [Saleh Baderah](https://github.com/SalehBaderah).
 | Skill | Purpose | Documentation |
 | --- | --- | --- |
 | [`website-walkthrough`](website-walkthrough/) | Turn a screen recording or live website into a polished demo video. | [README](website-walkthrough/README.md) |
-| [`create-your-own-course`](create-your-own-course/) | Design, build, teach, and improve a personalized course on any subject. | [README](create-your-own-course/README.md) |
+| [`create-your-own-course`](create-your-own-course/) | Write a complete personalized course on any subject: theory lessons, practical exercises, and answer keys. | [README](create-your-own-course/README.md) |
 
 ## Website Walkthrough
 
@@ -23,7 +23,7 @@ With Node.js and npm installed, run from your project directory:
 npx skills add https://github.com/SalehBaderah/sl-skills/tree/main --skill website-walkthrough --agent codex
 ```
 
-Add `--global` to install across projects. Reload skills or start a new agent session after installation.
+Choose your agent when prompted, or pass `--agent <name>`. Add `--global` to install across projects. Reload skills or start a new agent session after installation.
 
 Rendering requires **Python 3.10+ and FFmpeg**; live capture also uses Playwright. Follow the [setup guide](website-walkthrough/README.md#installation) to install these dependencies.
 
@@ -51,25 +51,28 @@ Keep the UI readable, add a rounded frame, and preserve the original audio.
 
 ## Create Your Own Course
 
-Design, build, teach, and improve a personalized course on any subject. The skill helps define practical outcomes, assess the learner's starting point, plan a roadmap, create modules incrementally, and track demonstrated progress.
+Have your agent write a complete, personalized course on any subject: full theory lessons, worked examples, practical exercises, projects, and answer keys you can study from directly. The skill also helps define practical outcomes, assess the learner's starting point, plan a roadmap, create modules incrementally, and track demonstrated progress.
 
 ### Install
 
 With Node.js and npm installed, run from your project directory:
 
 ```bash
-npx skills add https://github.com/SalehBaderah/sl-skills/tree/main --skill create-your-own-course --agent codex
+npx skills add https://github.com/SalehBaderah/sl-skills/tree/main --skill create-your-own-course
 ```
 
-Add `--global` to install across projects. Reload skills or start a new agent session after installation.
+Choose your agent when prompted, or pass `--agent <name>`. Add `--global` to install across projects. Reload skills or start a new agent session after installation.
 
 ### Try it
 
 ```text
-Use $create-your-own-course to help me learn [subject].
+Use the create-your-own-course skill to help me learn [subject].
 Start by understanding my goals and planning the roadmap with me.
 Do not create course files until we agree on the plan.
 ```
 
 [Setup & usage](create-your-own-course/README.md) · [Examples](create-your-own-course/examples) · [Templates](create-your-own-course/templates)
 
+## License
+
+MIT. See [LICENSE](LICENSE).

@@ -117,14 +117,14 @@ def homography(plan, t, duration, canvas, bounds):
 
 class MotionStage:
     """Composite a premultiplied video plane and shadow over a fixed backdrop."""
-    def __init__(self, background, front_alpha, bounds, radius, plan, duration):
+    def __init__(self, background, front_alpha, bounds, radius, plan, duration, shadow_offset=8, shadow_strength=145):
         self.background = background
         self.oh, self.ow = background.shape[:2]
         self.bounds, self.plan, self.duration = bounds, plan, duration
         self.front_alpha = front_alpha
         sx, sy, sw, sh = bounds
         shadow = Image.new('L', (self.ow, self.oh))
-        ImageDraw.Draw(shadow).rounded_rectangle((sx, sy+8, sx+sw, sy+sh+8), radius=radius, fill=145)
+        ImageDraw.Draw(shadow).rounded_rectangle((sx, sy+shadow_offset, sx+sw, sy+sh+shadow_offset), radius=radius, fill=shadow_strength)
         shadow_alpha = np.array(shadow.filter(ImageFilter.GaussianBlur(max(2, self.ow*.012))), np.float32)/255
         front = np.zeros((self.oh, self.ow), np.float32)
         front[sy:sy+sh, sx:sx+sw] = front_alpha[:, :, 0]
@@ -135,8 +135,11 @@ class MotionStage:
         sx, sy, sw, sh = self.bounds
         self.layer[sy:sy+sh, sx:sx+sw] = screen*self.front_alpha
         transform = homography(self.plan, t, self.duration, (self.ow, self.oh), self.bounds)
-        # Positive, matching interpolation weights keep premultiplied RGB and
-        # opacity consistent and avoid dark fringes on light viewport edges.
+        if np.allclose(transform, np.eye(3), atol=1e-6):
+            # Settled pose: composite directly, so text is resampled only once.
+            return np.clip(self.layer+self.background*(1-self.alpha[..., None]), 0, 255).astype(np.uint8)
+        # Bilinear (positive weights) on premultiplied RGB and opacity avoids the
+        # dark edge halos that cubic/Lanczos ringing would add.
         foreground = cv2.warpPerspective(self.layer, transform, (self.ow, self.oh), flags=cv2.INTER_LINEAR)
         matte = np.clip(cv2.warpPerspective(self.alpha, transform, (self.ow, self.oh), flags=cv2.INTER_LINEAR), 0, 1)[..., None]
         return np.clip(foreground+self.background*(1-matte), 0, 255).astype(np.uint8)

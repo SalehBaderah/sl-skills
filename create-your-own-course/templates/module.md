@@ -1,43 +1,70 @@
 # Module [number]: [Title]
 
-<!-- Copy and adapt. Keep solutions separate when they would spoil independent practice. -->
+<!-- Copy and adapt. Write the real content in every section: the learner should be able to study this module end to end without other sources. Remove sections that don't fit the subject. -->
 
 ## Outcome
 
-[What the learner should be able to do and why it matters.]
+[What the learner will be able to do after this module, and why it matters for their goal.]
 
 ## Prerequisites and effort
 
-[Only necessary prior abilities. Give an approximate effort range with assumptions.]
+[Only necessary prior abilities. Approximate effort, e.g. "2 sessions of 45 minutes", with assumptions.]
 
-## Concepts and explanations
+## Lessons (theory)
 
-[Teach the concepts needed for this outcome at the learner's level.]
+### Lesson 1: [Concept]
+
+[Full explanation at the learner's level: why it matters, the idea built up step by step, new terms defined, the reasoning behind it (how and why, not just what).]
+
+**Example:** [A concrete example, with explanation.]
+
+**Common mistake:** [A typical misconception and why it's wrong.]
+
+**Check yourself:** [1–3 short questions. Answers in the answer key.]
+
+### Lesson 2: [Concept]
+
+[...]
 
 ## Worked example
 
-[Demonstrate the task and explain the important decisions.]
+[Demonstrate the full task step by step, narrating the important decisions.]
 
 ## Guided practice
 
-[A supported activity with useful prompts, scaffolding, and optional hints.]
+[Tasks with scaffolding: partial solutions, prompts, hints. Include all starter material (text, data, code, templates, materials list).]
 
-## Independent activity
+1. [Task, with clear instructions and expected output]
+   - Hint: [...]
 
-[A task that gives the learner a chance to apply the skill without seeing the full solution.]
+## Independent practice
 
-## Feedback and completion criteria
+[Tasks ordered easier to harder, without scaffolding. Realistic scenarios from the learner's context. State what to produce and roughly how long it should take.]
 
-[Observable criteria. Explain what evidence to submit and how revision will work.]
+## Mini-project (optional)
+
+[A deliverable that combines this module's skills: brief, constraints, success criteria.]
+
+## Success criteria
+
+[Observable criteria or rubric. What evidence to submit for feedback and how revision works.]
 
 ## Recap and retrieval
 
-[Key ideas and a few useful questions or transfer tasks.]
+[Key ideas in a few lines, plus retrieval questions and one transfer task.]
 
 ## Next step
 
 [Continue, revisit, or extend based on the learner's work.]
 
-## Optional resources
+## Optional further study
 
-[Relevant references if needed. Identify any unverified links or claims; do not fabricate citations.]
+[Optional extras only, never a replacement for the lessons above. Mark unverified links or claims; never invent citations.]
+
+---
+
+## Answer key and model solutions
+
+<!-- Keep separate (or in a separate file) when seeing it would spoil practice. -->
+
+[Answers to the self-check questions, worked solutions for the practice tasks, a model answer for the project.]

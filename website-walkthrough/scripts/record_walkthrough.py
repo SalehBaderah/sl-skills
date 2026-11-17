@@ -69,11 +69,11 @@ def locator(page, target):
 
 async def move_pointer(page, x, y, current):
     old_x, old_y = current
-    for i in range(1, 19):
-        f = i / 18
-        eased = f*f*(3-2*f)
+    for i in range(1, 31):
+        f = i / 30
+        eased = f*f*f*(f*(f*6-15)+10)
         await page.mouse.move(old_x+(x-old_x)*eased, old_y+(y-old_y)*eased)
-        await asyncio.sleep(.025)
+        await asyncio.sleep(.018)
     return x, y
 
 
@@ -105,7 +105,7 @@ async def run_actions(page, config, state):
                 await target.fill(value)
         elif action == "scroll":
             duration = step.get("duration", 1.6)
-            ticks = max(16, round(duration*30))
+            ticks = max(24, round(duration*60))
             previous = 0
             for i in range(1, ticks+1):
                 t = i/ticks
@@ -147,8 +147,16 @@ def trim_start(raw):
     raise RuntimeError("Cannot locate the sync slate; do not use unaligned interaction data")
 
 
+def capture_scale(config):
+    """Device pixel ratio for capture: default 2, reduced to keep video <= 3840 px wide."""
+    size = config.get("viewport", {"width": 1440, "height": 900})
+    scale = config.get("scale", 2)
+    return max(1, min(scale, 3840 // size["width"], 2160 // size["height"]))
+
+
 def validate(config):
     if not isinstance(config, dict): raise ValueError("Capture script must be an object")
+    if config.get("scale", 2) not in (1, 2, 3): raise ValueError("scale must be 1, 2, or 3")
     web_url(config.get("url", ""))
     viewport = config.get("viewport", {"width": 1440, "height": 900})
     for key in ("width", "height"):
@@ -198,9 +206,13 @@ async def record(args, config):
         browser = await pw.chromium.launch(**options)
         context = None
         try:
+            # Render at high pixel density and record at that size, so text in
+            # the source is sharp enough for camera focus moves.
+            scale = capture_scale(config)
             context = await browser.new_context(
-                viewport=size, record_video_dir=str(raw_dir), record_video_size=size,
-                device_scale_factor=1, has_touch=any(s["action"] == "tap" for s in config["steps"]),
+                viewport=size, record_video_dir=str(raw_dir),
+                record_video_size={"width": size["width"]*scale, "height": size["height"]*scale},
+                device_scale_factor=scale, has_touch=any(s["action"] == "tap" for s in config["steps"]),
                 storage_state=str(args.storage_state) if args.storage_state else None,
             )
             await context.expose_binding("__walkthroughEvent", receive)
@@ -234,7 +246,7 @@ async def record(args, config):
     duration = float(info["format"]["duration"])
     plan = {"frame": True, "motion": {"enabled": True}, "audio": "preserve", "crf": 14, "click_highlights": True,
             "camera": [[0, 1, .5, .5], [duration, 1, .5, .5]],
-            "sound_effects": {"enabled": True, "volume": .35},
+            "sound_effects": {"enabled": True, "volume": .25},
             "source_cursor_visible": bool(config.get("site_draws_cursor", False)),
             "events": [e for e in events if e["time"] <= duration]}
     if not plan["source_cursor_visible"]:

@@ -5,6 +5,8 @@ The JSON plan contains recording-specific editing data. All camera, event, and c
 | Field | Meaning |
 | --- | --- |
 | frame | true (default) for rounded screen and subdued backdrop; false for edge-to-edge |
+| background | auto (default; light or dark from the first frame's brightness), dark, light, or a #rrggbb color for the backdrop |
+| auto_camera | false (default). true restores automatic per-click focus zooms when no camera keys exist; usually causes zoom pumping |
 | crop | Optional [left, top, right, bottom] bounds, normalized to the full source; default [0, 0, 1, 1] |
 | canvas | Optional [width, height] output dimensions, each an even integer from 2 to 7680; default source dimensions rounded down to even values |
 | motion | Optional framed-stage translation and video-plane perspective; absent or disabled retains the static stage; see below |
@@ -70,7 +72,7 @@ Supported sounds are `click`, `open`, `close`, `touch`, `toggle`, `type`, and `s
 ```json
 {
   "audio": "preserve",
-  "sound_effects": {"enabled": true, "volume": 0.35},
+  "sound_effects": {"enabled": true, "volume": 0.25},
   "events": [
     {"time": 1.2, "x": 0.6, "y": 0.3, "sound": "click"},
     {"time": 3.0, "x": 0.8, "y": 0.2, "sound": "none"}
@@ -83,8 +85,8 @@ If inspection identifies persistent mains hum, optionally add `"audio_cleanup": 
 
 ## Camera and pointer timing
 
-Automatic mode eases into an event beginning 0.55 seconds before its timestamp, holds focus until 0.6 seconds afterward, then releases over 0.8 seconds. Nearby events blend their focus points. Use explicit camera keys when this blend would center on irrelevant content, or when a response appears far from its triggering control.
+With `auto_camera: true` and no camera keys, automatic mode eases into an event beginning 0.55 seconds before its timestamp, holds focus until 0.6 seconds afterward, then releases over 0.8 seconds. Nearby events blend their focus points. Use explicit camera keys when this blend would center on irrelevant content, or when a response appears far from its triggering control.
 
-For explicit keyframes, each transition uses quintic easing. Include intermediate keys for a sustained scrolling move; two distant keys with easing can cause noticeable speed changes. Add equal-position keys at both ends of a pause. Camera keys control zoom/focus; event timestamps still control click highlights. A cursor keyframe is a pointer hotspot, not the center of its bitmap.
+For explicit keyframes, the camera follows a monotone cubic path: motion flows through intermediate keys without stopping, never overshoots, and rests only at holds and the ends. Zoom changes at a constant perceptual (logarithmic) rate. Without `auto_camera`, a plan with no camera keys stays wide. Add equal-position keys at both ends of a pause. Camera keys control zoom/focus; event timestamps still control click highlights. A cursor keyframe is a pointer hotspot, not the center of its bitmap.
 
 Do not substitute example timestamps for analysis. For a source with no reliable clicks, a deliberate camera-keyframe edit is valid; omit invented events and label the result accordingly.
